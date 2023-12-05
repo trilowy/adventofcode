@@ -2,9 +2,11 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufRead, BufReader},
+    time::Instant,
 };
 
 fn main() {
+    let start = Instant::now();
     let file = File::open("./2023/05/1/input.txt").expect("opening input file");
 
     let mut lines = BufReader::new(file).lines();
@@ -33,6 +35,7 @@ fn main() {
         .unwrap();
 
     println!("{result}");
+    println!("{:?}", start.elapsed());
 }
 
 trait SeedMap {
