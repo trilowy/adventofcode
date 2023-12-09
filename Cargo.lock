@@ -77,6 +77,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "adventofcode_2023_09_2"
+version = "0.1.0"
+dependencies = [
+ "stringreader",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
