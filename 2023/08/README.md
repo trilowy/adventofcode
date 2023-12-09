@@ -10,6 +10,7 @@ After examining the maps for a bit, two nodes stick out: AAA and ZZZ. You feel l
 
 This format defines each node of the network individually. For example:
 
+```
 RL
 
 AAA = (BBB, CCC)
@@ -19,16 +20,19 @@ DDD = (DDD, DDD)
 EEE = (EEE, EEE)
 GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)
+```
 
 Starting with AAA, you need to look up the next element based on the next left/right instruction in your input. In this example, start with AAA and go right (R) by choosing the right element of AAA, CCC. Then, L means to choose the left element of CCC, ZZZ. By following the left/right instructions, you reach ZZZ in 2 steps.
 
 Of course, you might not find ZZZ right away. If you run out of left/right instructions, repeat the whole sequence of instructions as necessary: RL really means RLRLRLRLRLRLRLRL... and so on. For example, here is a situation that takes 6 steps to reach ZZZ:
 
+```
 LLR
 
 AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)
+```
 
 Starting at AAA, follow the left/right instructions. How many steps are required to reach ZZZ?
 
@@ -43,6 +47,7 @@ After examining the maps a bit longer, your attention is drawn to a curious fact
 
 For example:
 
+```
 LR
 
 11A = (11B, XXX)
@@ -53,6 +58,7 @@ LR
 22C = (22Z, 22Z)
 22Z = (22B, 22B)
 XXX = (XXX, XXX)
+```
 
 Here, there are two starting nodes, 11A and 22A (because they both end with A). As you follow each left/right instruction, use that instruction to simultaneously navigate away from both nodes you're currently on. Repeat this process until all of the nodes you're currently on end with Z. (If only some of the nodes you're on end with Z, they act like any other node and you continue as normal.) In this example, you would proceed as follows:
 
