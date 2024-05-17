@@ -1,9 +1,9 @@
 # How to run
 
-* Install Rust
+* Install Zig
 * Go to the root directory
 * Run:
   ```bash
-  cargo run -p adventofcode_2023_01_1
+  zig run 2023/01/1/main.zig
   ```
   or other sub-project name
