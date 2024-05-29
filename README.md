@@ -1,9 +1,9 @@
 # How to run
 
-* Install Rust
+* Install Gleam
 * Go to the root directory
 * Run:
   ```bash
-  cargo run -p adventofcode_2023_01_1
+  gleam run
   ```
   or other sub-project name
