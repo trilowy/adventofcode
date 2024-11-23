@@ -10,7 +10,7 @@ use std::{
 fn main() {
     let start = Instant::now();
 
-    let file = File::open("./2023/05/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
     let mut lines = BufReader::new(file).lines().flatten();
 
     let mut seeds: Seeds = lines.next().unwrap().parse().unwrap();

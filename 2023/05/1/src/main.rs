@@ -5,7 +5,7 @@ use std::{
 };
 
 fn main() {
-    let file = File::open("./2023/05/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let mut lines = BufReader::new(file).lines();
     let seeds = parse_seeds(&lines.next().unwrap().unwrap());

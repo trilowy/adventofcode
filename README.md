@@ -1,9 +1,8 @@
 # How to run
 
 * Install Rust
-* Go to the root directory
+* Go to the puzzle directory
 * Run:
   ```bash
-  cargo run -p adventofcode_2023_01_1
+  cargo run
   ```
-  or other sub-project name

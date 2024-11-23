@@ -125,7 +125,7 @@ impl Schematic {
 }
 
 fn main() {
-    let file = File::open("./2023/03/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let schematic = Schematic::from(file);
 

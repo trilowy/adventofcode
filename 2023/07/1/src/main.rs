@@ -12,7 +12,7 @@ const CARD_ORDER: [char; 13] = [
 ];
 
 fn main() {
-    let file = File::open("./2023/07/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let mut card_hands: Vec<CardHand> = BufReader::new(file)
         .lines()

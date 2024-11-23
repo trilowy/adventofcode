@@ -5,7 +5,7 @@ use std::{
 };
 
 fn main() {
-    let file = File::open("./2023/01/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
     let regex = Regex::new(r"one|two|three|four|five|six|seven|eight|nine|[0-9]").unwrap();
     let regex_rev = Regex::new(r"^.*(one|two|three|four|five|six|seven|eight|nine|[0-9])").unwrap();
 

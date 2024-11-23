@@ -4,7 +4,7 @@ use std::{
 };
 
 fn main() {
-    let file = File::open("./2023/09/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
     println!("{}", process(file));
 }
 

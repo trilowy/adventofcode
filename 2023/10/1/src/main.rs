@@ -12,7 +12,7 @@ const GROUND: char = '.';
 fn main() {
     let start = Instant::now();
 
-    let file = File::open("./2023/10/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
     println!("{}", process(file));
 
     println!("{:?}", start.elapsed());

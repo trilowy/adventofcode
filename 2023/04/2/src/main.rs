@@ -5,7 +5,7 @@ use std::{
 };
 
 fn main() {
-    let file = File::open("./2023/04/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let games_and_points: BTreeMap<usize, usize> = BufReader::new(file)
         .lines()

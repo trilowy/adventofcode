@@ -6,7 +6,7 @@ use std::{
 const GAME_PREFIX_SIZE: usize = "Game ".len();
 
 fn main() {
-    let file = File::open("./2023/02/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let result: u32 = BufReader::new(file)
         .lines()

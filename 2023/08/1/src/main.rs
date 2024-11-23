@@ -8,7 +8,7 @@ const START_NODE: &str = "AAA";
 const END_NODE: &str = "ZZZ";
 
 fn main() {
-    let file = File::open("./2023/08/1/input.txt").expect("opening input file");
+    let file = File::open("input.txt").expect("opening input file");
 
     let mut lines = BufReader::new(file).lines().flatten();
     let instructions = lines.next().unwrap();
