@@ -26,7 +26,11 @@ fn process(file: impl Read) -> i32 {
     let mut graph = UnGraphMap::new();
     let mut edges = HashMap::new();
 
-    for (y, line) in BufReader::new(file).lines().flatten().enumerate() {
+    for (y, line) in BufReader::new(file)
+        .lines()
+        .map_while(Result::ok)
+        .enumerate()
+    {
         for (x, c) in line.chars().enumerate() {
             if c != GROUND {
                 let pipe = Pipe::from(c);

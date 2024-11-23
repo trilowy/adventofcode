@@ -58,7 +58,7 @@ impl Number {
         }
     }
 
-    fn has_symbol_in_neighbor(&self, symbols: &Vec<Coordinates>) -> bool {
+    fn has_symbol_in_neighbor(&self, symbols: &[Coordinates]) -> bool {
         let neighbor_zone = self.get_neighbor_zone();
 
         symbols.iter().any(|symbol| neighbor_zone.is_inside(symbol))
@@ -78,7 +78,11 @@ impl Schematic {
             symbols: Vec::new(),
         };
 
-        for (y, line) in BufReader::new(file).lines().flatten().enumerate() {
+        for (y, line) in BufReader::new(file)
+            .lines()
+            .map_while(Result::ok)
+            .enumerate()
+        {
             for (x, c) in line.chars().enumerate() {
                 match c {
                     c if c.is_ascii_digit() => schematic.add_digit(c, x, y),
@@ -94,14 +98,13 @@ impl Schematic {
     fn get_all_numbers_with_symbol(&self) -> Vec<u32> {
         self.numbers
             .iter()
-            .map(|number| {
+            .filter_map(|number| {
                 if number.has_symbol_in_neighbor(&self.symbols) {
                     number.number.parse().ok()
                 } else {
                     None
                 }
             })
-            .flatten()
             .collect()
     }
 

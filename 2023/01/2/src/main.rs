@@ -11,7 +11,7 @@ fn main() {
 
     let result: u32 = BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(|line| find_number(&regex, &regex_rev, line))
         .sum();
 

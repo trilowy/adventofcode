@@ -16,7 +16,7 @@ fn main() {
 
     let mut card_hands: Vec<CardHand> = BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(|line| line.parse().unwrap())
         .collect();
 
@@ -102,7 +102,7 @@ enum CardHandKind {
 }
 
 impl CardHandKind {
-    fn from(cards: &Vec<Card>) -> Self {
+    fn from(cards: &[Card]) -> Self {
         let map = cards
             .iter()
             .fold(HashMap::new(), |mut map: HashMap<&Card, usize>, x| {

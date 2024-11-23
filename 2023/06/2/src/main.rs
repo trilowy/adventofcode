@@ -6,7 +6,7 @@ use std::{
 fn main() {
     let file = File::open("input.txt").expect("opening input file");
 
-    let mut lines = BufReader::new(file).lines().flatten();
+    let mut lines = BufReader::new(file).lines().map_while(Result::ok);
     let times = lines.next().unwrap();
     let time = parse_line(&times);
     let distances = lines.next().unwrap();
@@ -28,7 +28,6 @@ fn parse_line(text: &str) -> u64 {
     text.split_once(':')
         .unwrap()
         .1
-        .trim()
         .split_whitespace()
         .fold(String::new(), |acc, e| acc + e)
         .parse()

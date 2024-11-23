@@ -10,7 +10,7 @@ fn main() {
 
     let result: u32 = BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(get_valid_game_number)
         .sum();
 

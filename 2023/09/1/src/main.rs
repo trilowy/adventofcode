@@ -11,7 +11,7 @@ fn main() {
 fn process(file: impl Read) -> i64 {
     BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(find_next_value)
         .sum()
 }

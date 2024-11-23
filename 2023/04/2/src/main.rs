@@ -9,17 +9,15 @@ fn main() {
 
     let games_and_points: BTreeMap<usize, usize> = BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(get_game_id_and_points)
         .collect();
 
-    let mut games_and_copies: HashMap<usize, usize> = games_and_points
-        .keys()
-        .map(|key| (key.clone(), 1))
-        .collect();
+    let mut games_and_copies: HashMap<usize, usize> =
+        games_and_points.keys().map(|key| (*key, 1)).collect();
 
     for (game_id, points) in games_and_points {
-        let number_of_copies = games_and_copies.get(&game_id).unwrap().clone();
+        let number_of_copies = *games_and_copies.get(&game_id).unwrap();
         for winning_game_id in (game_id + 1)..=(game_id + points) {
             if let Some(existing_copies) = games_and_copies.get(&winning_game_id) {
                 games_and_copies.insert(winning_game_id, existing_copies + number_of_copies);

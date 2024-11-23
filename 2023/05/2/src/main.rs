@@ -11,7 +11,7 @@ fn main() {
     let start = Instant::now();
 
     let file = File::open("input.txt").expect("opening input file");
-    let mut lines = BufReader::new(file).lines().flatten();
+    let mut lines = BufReader::new(file).lines().map_while(Result::ok);
 
     let mut seeds: Seeds = lines.next().unwrap().parse().unwrap();
 

@@ -9,7 +9,7 @@ fn main() {
 
     let result: u32 = BufReader::new(file)
         .lines()
-        .flatten()
+        .map_while(Result::ok)
         .map(get_power_of_game)
         .sum();
 

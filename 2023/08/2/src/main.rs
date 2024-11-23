@@ -10,7 +10,7 @@ const END_NODE: char = 'Z';
 fn main() {
     let file = File::open("input.txt").expect("opening input file");
 
-    let mut lines = BufReader::new(file).lines().flatten();
+    let mut lines = BufReader::new(file).lines().map_while(Result::ok);
     let instructions = lines.next().unwrap();
     let lines = lines.skip(1);
 
@@ -20,7 +20,7 @@ fn main() {
         .iter()
         .filter(|(node, _)| node.ends_with(START_NODE))
         .map(|(node, _)| number_of_steps(node, &instructions, &nodes))
-        .reduce(|acc, e| lcm(acc, e))
+        .reduce(lcm)
         .unwrap();
 
     println!("{steps}");
@@ -69,9 +69,7 @@ fn gcd(first: usize, second: usize) -> usize {
     let mut max = first;
     let mut min = second;
     if min > max {
-        let val = max;
-        max = min;
-        min = val;
+        std::mem::swap(&mut max, &mut min);
     }
 
     loop {

@@ -10,7 +10,7 @@ const END_NODE: &str = "ZZZ";
 fn main() {
     let file = File::open("input.txt").expect("opening input file");
 
-    let mut lines = BufReader::new(file).lines().flatten();
+    let mut lines = BufReader::new(file).lines().map_while(Result::ok);
     let instructions = lines.next().unwrap();
     let lines = lines.skip(1);
 

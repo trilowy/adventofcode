@@ -90,7 +90,11 @@ impl Schematic {
             gears: Vec::new(),
         };
 
-        for (y, line) in BufReader::new(file).lines().flatten().enumerate() {
+        for (y, line) in BufReader::new(file)
+            .lines()
+            .map_while(Result::ok)
+            .enumerate()
+        {
             for (x, c) in line.chars().enumerate() {
                 match c {
                     c if c.is_ascii_digit() => schematic.add_digit(c, x, y),
@@ -106,14 +110,13 @@ impl Schematic {
     fn get_all_gear_ratios(&mut self) -> Vec<u32> {
         self.gears
             .iter()
-            .map(|gear| {
+            .filter_map(|gear| {
                 gear.pop_two_numbers_in_neighbor(&mut self.numbers)
                     .map(|(number_1, number_2)| {
                         number_1.number.parse::<u32>().unwrap()
                             * number_2.number.parse::<u32>().unwrap()
                     })
             })
-            .flatten()
             .collect()
     }
 

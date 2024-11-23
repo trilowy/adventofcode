@@ -6,7 +6,7 @@ use std::{
 fn main() {
     let file = File::open("input.txt").expect("opening input file");
 
-    let mut lines = BufReader::new(file).lines().flatten();
+    let mut lines = BufReader::new(file).lines().map_while(Result::ok);
     let times = lines.next().unwrap();
     let times = parse_line(&times);
     let distances = lines.next().unwrap();
@@ -34,7 +34,6 @@ fn parse_line(text: &str) -> impl Iterator<Item = u32> + '_ {
     text.split_once(':')
         .unwrap()
         .1
-        .trim()
         .split_whitespace()
         .map(|text| text.parse::<u32>().unwrap())
 }
