@@ -8,6 +8,10 @@
   ```sh
   cargo run
   ```
+* Launch tests:
+  ```sh
+  cargo test
+  ```
 
 ## For Zig
 
@@ -16,4 +20,8 @@
 * Run:
   ```sh
   zig run main.zig
+  ```
+* Launch tests:
+  ```sh
+  zig test main.zig
   ```
