@@ -40,17 +40,18 @@ fn process(file: impl Read) -> u32 {
 #[cfg(test)]
 mod tests {
     use crate::process;
-    use stringreader::StringReader;
+    use std::io::BufReader;
 
     #[test]
     fn test_example_result() {
-        let lines = StringReader::new(
+        let lines = BufReader::new(
             "3   4
 4   3
 2   5
 1   3
 3   9
-3   3",
+3   3"
+                .as_bytes(),
         );
 
         assert_eq!(process(lines), 31);
