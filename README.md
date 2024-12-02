@@ -12,6 +12,11 @@
   ```sh
   cargo test
   ```
+* See how fast the program runs:
+  ```sh
+  cargo build --release
+  time ./target/release/adventofcode
+  ```
 
 ## For Zig
 
@@ -24,4 +29,9 @@
 * Launch tests:
   ```sh
   zig test main.zig
+  ```
+* See how fast the program runs:
+  ```sh
+  zig build-exe main.zig -Doptimize=ReleaseSafe
+  time ./main
   ```
