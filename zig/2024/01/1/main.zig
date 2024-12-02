@@ -2,6 +2,11 @@ const std = @import("std");
 const file: []const u8 = @embedFile("input.txt");
 
 pub fn main() !void {
+    var main_timer = try std.time.Timer.start();
+    defer {
+        std.debug.print("{}\n", .{std.fmt.fmtDuration(main_timer.read())});
+    }
+
     const result = try process(file);
 
     std.debug.print("{}\n", .{result});
