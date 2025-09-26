@@ -1,18 +1,19 @@
 const std = @import("std");
 
-pub fn main() !void {
+pub fn main() void {
     var stdout_buffer: [1024]u8 = undefined;
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout = &stdout_writer.interface;
 
-    const result = try processFile();
-    try stdout.print("{d}\n", .{result});
+    var stderr_buffer: [1024]u8 = undefined;
+    var stderr_writer = std.fs.File.stderr().writer(&stderr_buffer);
+    const stderr = &stderr_writer.interface;
 
-    try stdout.flush();
-}
-
-fn processFile() !i32 {
-    const input_file = try std.fs.cwd().openFile("input.txt", .{ .mode = .read_only });
+    const input_file = std.fs.cwd().openFile("input.txt", .{ .mode = .read_only }) catch |err| {
+        stderr.print("Error reading input.txt: {}\n", .{err}) catch {};
+        stderr.flush() catch {};
+        std.process.exit(1);
+    };
     defer input_file.close();
 
     var read_buffer: [1024]u8 = undefined;
@@ -23,9 +24,20 @@ fn processFile() !i32 {
     while (file_reader.read(&read_buffer)) |bytes_read| {
         if (bytes_read == 0) break; // EOF
         result += processChunk(read_buffer[0..bytes_read]);
-    } else |err| if (err != error.EndOfStream) return err;
+    } else |err| {
+        if (err != error.EndOfStream) {
+            stderr.print("Error reading input.txt: {}\n", .{err}) catch {};
+            stderr.flush() catch {};
+            std.process.exit(2);
+        }
+    }
 
-    return result;
+    stdout.print("{d}\n", .{result}) catch |err| {
+        stderr.print("Error printing result: {}\n", .{err}) catch {};
+        stderr.flush() catch {};
+        std.process.exit(1);
+    };
+    stdout.flush() catch {};
 }
 
 fn processChunk(line: []const u8) i32 {
