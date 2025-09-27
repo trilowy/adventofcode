@@ -21,39 +21,43 @@ pub fn main() !void {
     var read_buffer: [1024]u8 = undefined;
     var file_reader = input_file.reader(&read_buffer);
 
-    var result: i32 = 0;
+    var result: usize = 0;
+    var floor: i32 = 0;
 
     while (file_reader.read(&read_buffer)) |bytes_read| {
         if (bytes_read == 0) break; // EOF
-        result += processChunk(read_buffer[0..bytes_read]);
+
+        if (processChunk(read_buffer[0..bytes_read], &floor)) |basement_index| {
+            result += basement_index;
+            break;
+        }
+
+        result += bytes_read;
     } else |err| if (err != error.EndOfStream) return err;
 
     try stdout.print("{d}\n", .{result});
     try stdout.flush();
 }
 
-fn processChunk(line: []const u8) i32 {
-    var floor: i32 = 0;
-
-    for (line) |character| {
+fn processChunk(line: []const u8, floor: *i32) ?usize {
+    for (line, 0..) |character, index| {
         switch (character) {
-            '(' => floor += 1,
-            ')' => floor -= 1,
+            '(' => floor.* += 1,
+            ')' => floor.* -= 1,
             else => {},
+        }
+
+        if (floor.* == -1) {
+            return index + 1;
         }
     }
 
-    return floor;
+    return null;
 }
 
 test "processChunk with example" {
-    try std.testing.expectEqual(0, processChunk("(())"));
-    try std.testing.expectEqual(0, processChunk("()()"));
-    try std.testing.expectEqual(3, processChunk("((("));
-    try std.testing.expectEqual(3, processChunk("(()(()("));
-    try std.testing.expectEqual(3, processChunk("))((((("));
-    try std.testing.expectEqual(-1, processChunk("())"));
-    try std.testing.expectEqual(-1, processChunk("))("));
-    try std.testing.expectEqual(-3, processChunk(")))"));
-    try std.testing.expectEqual(-3, processChunk(")())())"));
+    var floor: i32 = 0;
+    try std.testing.expectEqual(1, processChunk(")", &floor));
+    floor = 0;
+    try std.testing.expectEqual(5, processChunk("()())", &floor));
 }
