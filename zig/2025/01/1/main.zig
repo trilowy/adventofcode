@@ -23,27 +23,17 @@ pub fn main() !void {
     var file_reader = input_file.reader(&read_buffer);
     const reader = &file_reader.interface;
 
-    var result: i32 = 0;
-    var dial: i32 = 50;
-
-    while (reader.takeDelimiter('\n')) |line| {
-        if (line == null) break; // EOF
-
-        const movement = try parseLine(line.?);
-        dial = @mod(dial + movement, 100);
-        if (dial == 0) {
-            result += 1;
-        }
-    } else |err| switch (err) {
-        error.ReadFailed => {
-            return err;
-        },
-        error.StreamTooLong => {
-            try stderr.print("Error: line is longer than {d} bytes, change the buffer size\n", .{line_max_length});
-            try stderr.flush();
-            std.process.exit(1);
-        },
-    }
+    const result = processResult(reader) catch |err|
+        switch (err) {
+            error.StreamTooLong => {
+                try stderr.print("Error: line is longer than {d} bytes, change the buffer size\n", .{line_max_length});
+                try stderr.flush();
+                std.process.exit(1);
+            },
+            else => {
+                return err;
+            },
+        };
 
     try stdout.print("{d}\n", .{result});
     try stdout.flush();
@@ -59,7 +49,41 @@ fn parseLine(line: []const u8) !i32 {
     };
 }
 
+fn processResult(reader: *std.Io.Reader) !i32 {
+    var result: i32 = 0;
+    var dial: i32 = 50;
+
+    while (try reader.takeDelimiter('\n')) |line| {
+        const movement = try parseLine(line);
+        dial = @mod(dial + movement, 100);
+        if (dial == 0) {
+            result += 1;
+        }
+    }
+
+    return result;
+}
+
 test "parseLine with example" {
     try std.testing.expectEqual(-68, parseLine("L68"));
     try std.testing.expectEqual(48, parseLine("R48"));
+}
+
+test "processResult with example" {
+    const input =
+        \\L68
+        \\L30
+        \\R48
+        \\L5
+        \\R60
+        \\L55
+        \\L1
+        \\L99
+        \\R14
+        \\L82
+    ;
+
+    var reader = std.Io.Reader.fixed(input);
+
+    try std.testing.expectEqual(3, processResult(&reader));
 }
