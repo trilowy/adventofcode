@@ -1,4 +1,5 @@
 const std = @import("std");
+const Reader = std.Io.Reader;
 
 const file_name = "input.txt";
 const line_max_length = 1024;
@@ -24,29 +25,17 @@ pub fn main() !void {
     var file_reader = input_file.reader(&read_buffer);
     const reader = &file_reader.interface;
 
-    var result: i32 = 0;
-    var dial: i32 = 50;
-
-    while (reader.takeDelimiter('\n')) |line| {
-        if (line == null) break; // EOF
-
-        const movement = try parseLine(line.?);
-        result += @divTrunc(movement, dial_size);
-        dial += movement;
-        if (dial <= 0 or dial >= 100) {
-            result += 1;
-        }
-        dial = @mod(dial, dial_size);
-    } else |err| switch (err) {
-        error.ReadFailed => {
-            return err;
-        },
-        error.StreamTooLong => {
-            try stderr.print("Error: line is longer than {d} bytes, change the buffer size\n", .{line_max_length});
-            try stderr.flush();
-            std.process.exit(1);
-        },
-    }
+    const result = processResult(reader) catch |err|
+        switch (err) {
+            error.StreamTooLong => {
+                try stderr.print("Error: line is longer than {d} bytes, change the buffer size\n", .{line_max_length});
+                try stderr.flush();
+                std.process.exit(1);
+            },
+            else => {
+                return err;
+            },
+        };
 
     try stdout.print("{d}\n", .{result});
     try stdout.flush();
@@ -62,7 +51,122 @@ fn parseLine(line: []const u8) !i32 {
     };
 }
 
+fn processResult(reader: *Reader) !i32 {
+    var result: i32 = 0;
+    var dial: i32 = 50;
+
+    while (try reader.takeDelimiter('\n')) |line| {
+        const movement = try parseLine(line);
+
+        const new_dial = dial + movement;
+
+        if (dial != 0 and new_dial <= 0) {
+            result += -1 * @divTrunc(new_dial, dial_size) + 1;
+        } else if (new_dial >= 100) {
+            result += @divTrunc(new_dial, dial_size);
+        }
+
+        dial = @mod(new_dial, dial_size);
+    }
+
+    return result;
+}
+
 test "parseLine with example" {
     try std.testing.expectEqual(-68, parseLine("L68"));
     try std.testing.expectEqual(48, parseLine("R48"));
+}
+
+test "processResult with example" {
+    const input =
+        \\L68
+        \\L30
+        \\R48
+        \\L5
+        \\R60
+        \\L55
+        \\L1
+        \\L99
+        \\R14
+        \\L82
+    ;
+
+    var reader = Reader.fixed(input);
+
+    try std.testing.expectEqual(6, processResult(&reader));
+}
+
+test "processResult 1: 0 zero" {
+    var reader = Reader.fixed("L49");
+    try std.testing.expectEqual(0, processResult(&reader));
+}
+
+test "processResult 0: 1 zero" {
+    var reader = Reader.fixed("L50");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult -1: 1 zero" {
+    var reader = Reader.fixed("L51");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult -99: 1 zero" {
+    var reader = Reader.fixed("L149");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult -100: 2 zeros" {
+    var reader = Reader.fixed("L150");
+    try std.testing.expectEqual(2, processResult(&reader));
+}
+
+test "processResult -101: 2 zeros" {
+    var reader = Reader.fixed("L151");
+    try std.testing.expectEqual(2, processResult(&reader));
+}
+
+test "processResult -199: 2 zeros" {
+    var reader = Reader.fixed("L249");
+    try std.testing.expectEqual(2, processResult(&reader));
+}
+
+test "processResult -200: 3 zeros" {
+    var reader = Reader.fixed("L250");
+    try std.testing.expectEqual(3, processResult(&reader));
+}
+
+test "processResult -201: 3 zeros" {
+    var reader = Reader.fixed("L251");
+    try std.testing.expectEqual(3, processResult(&reader));
+}
+
+test "processResult 99: 0 zero" {
+    var reader = Reader.fixed("R49");
+    try std.testing.expectEqual(0, processResult(&reader));
+}
+
+test "processResult 100: 1 zero" {
+    var reader = Reader.fixed("R50");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult 101: 1 zero" {
+    var reader = Reader.fixed("R51");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult 199: 1 zero" {
+    var reader = Reader.fixed("R149");
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult 200: 2 zero" {
+    var reader = Reader.fixed("R150");
+    try std.testing.expectEqual(2, processResult(&reader));
+}
+
+test "processResult 201: 2 zero" {
+    var reader = Reader.fixed("R151");
+    try std.testing.expectEqual(2, processResult(&reader));
 }
