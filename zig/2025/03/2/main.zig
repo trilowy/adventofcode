@@ -45,15 +45,17 @@ fn parseLine(line: []const u8) !u128 {
     var batteries: [number_of_batteries]u8 = undefined;
     @memcpy(&batteries, line[0..number_of_batteries]);
 
-    var i: u8 = 1;
-    while (i < line.len - (number_of_batteries - 1)) {
-        std.debug.print("i:{d}\n", .{i});
-        for (i..i + number_of_batteries) |j| {
-            // TODO: logic on 12 batteries
-            std.debug.print("j:{d}\n", .{j});
+    for (1..(line.len - (number_of_batteries - 1))) |i| {
+        for (0..number_of_batteries) |j| {
+            if (line[i + j] > batteries[j]) {
+                const rest_of_batteries: [*]u8 = @ptrCast(&batteries[j]);
+                @memcpy(
+                    rest_of_batteries,
+                    line[(i + j)..(i + number_of_batteries)],
+                );
+                break;
+            }
         }
-
-        i += 1;
     }
 
     return try std.fmt.parseInt(u128, &batteries, 10);
