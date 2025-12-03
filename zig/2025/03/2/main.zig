@@ -42,16 +42,15 @@ pub fn main() !void {
 }
 
 fn parseLine(line: []const u8) !u128 {
-    var batteries: [number_of_batteries]u8 = line[0..number_of_batteries];
+    var batteries: [number_of_batteries]u8 = undefined;
+    @memcpy(&batteries, line[0..number_of_batteries]);
 
     var i: u8 = 1;
     while (i < line.len - (number_of_batteries - 1)) {
-        // TODO: logic on 12 batteries
-        if (line[i] > tens) {
-            tens = line[i];
-            units = line[i + 1];
-        } else if (line[i + 1] > units) {
-            units = line[i + 1];
+        std.debug.print("i:{d}\n", .{i});
+        for (i..i + number_of_batteries) |j| {
+            // TODO: logic on 12 batteries
+            std.debug.print("j:{d}\n", .{j});
         }
 
         i += 1;
