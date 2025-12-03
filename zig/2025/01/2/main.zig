@@ -60,8 +60,11 @@ fn processResult(reader: *Reader) !i32 {
 
         const new_dial = dial + movement;
 
-        if (dial != 0 and new_dial <= 0) {
-            result += -1 * @divTrunc(new_dial, dial_size) + 1;
+        if (new_dial <= 0) {
+            if (dial != 0) {
+                result += 1;
+            }
+            result += -1 * @divTrunc(new_dial, dial_size);
         } else if (new_dial >= 100) {
             result += @divTrunc(new_dial, dial_size);
         }
@@ -168,5 +171,27 @@ test "processResult 200: 2 zero" {
 
 test "processResult 201: 2 zero" {
     var reader = Reader.fixed("R151");
+    try std.testing.expectEqual(2, processResult(&reader));
+}
+
+test "processResult 0 and -1: 1 zero" {
+    const input =
+        \\L50
+        \\L1
+    ;
+
+    var reader = Reader.fixed(input);
+
+    try std.testing.expectEqual(1, processResult(&reader));
+}
+
+test "processResult 0 and -100: 2 zero" {
+    const input =
+        \\L50
+        \\L100
+    ;
+
+    var reader = Reader.fixed(input);
+
     try std.testing.expectEqual(2, processResult(&reader));
 }
