@@ -44,16 +44,13 @@ fn parseLine(line: []const u8) !i32 {
     var tens = line[0];
     var units = line[1];
 
-    var i: u8 = 1;
-    while (i < line.len - 1) {
+    for (1..(line.len - 1)) |i| {
         if (line[i] > tens) {
             tens = line[i];
             units = line[i + 1];
         } else if (line[i + 1] > units) {
             units = line[i + 1];
         }
-
-        i += 1;
     }
 
     var number: [2]u8 = undefined;
