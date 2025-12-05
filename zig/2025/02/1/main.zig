@@ -48,14 +48,16 @@ fn parseRange(line: []const u8) !u128 {
     const range_start = try std.fmt.parseInt(u128, range_0, 10);
     const range_end = try std.fmt.parseInt(u128, range_1, 10);
 
-    const number_of_digit_start = @divTrunc(range_0.len, 2);
+    if (range_0.len == range_1.len and @mod(range_0.len, 2) != 0) {
+        return 0;
+    }
+
+    const number_of_digit_start = try std.math.divCeil(usize, range_0.len, 2);
     const number_of_digit_end = @divTrunc(range_1.len, 2);
 
     var total: u128 = 0;
 
     for (number_of_digit_start..number_of_digit_end + 1) |number_of_digit| {
-        // FIXME: number_of_digit == 0 if len == 1 and div by 2
-        std.debug.print("{d}\n", .{number_of_digit});
         const start_number_of_digit = if (number_of_digit == 0) 0 else number_of_digit - 1;
         const end_number_of_digit = if (number_of_digit == 0) 1 else number_of_digit;
 
@@ -77,8 +79,11 @@ fn parseRange(line: []const u8) !u128 {
 fn processResult(reader: *Reader) !u128 {
     var result: u128 = 0;
 
-    while (try reader.takeDelimiter(',')) |line| {
-        result += try parseRange(line);
+    while (try reader.takeDelimiter('\n')) |line| {
+        var ranges = std.mem.splitScalar(u8, line, ',');
+        while (ranges.next()) |range| {
+            result += try parseRange(range);
+        }
     }
 
     return result;
