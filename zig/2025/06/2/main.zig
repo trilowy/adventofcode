@@ -46,47 +46,48 @@ fn processResult(reader: *Reader) !u128 {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    var rows = ArrayList([]const u8).empty;
+    var columns = ArrayList(ArrayList(u8)).empty;
 
+    // Init all columns with first row
+    if (try reader.takeDelimiter('\n')) |line| {
+        for (line) |char| {
+            var column = ArrayList(u8).empty;
+            try column.append(allocator, char);
+
+            try columns.append(allocator, column);
+        }
+    }
     while (try reader.takeDelimiter('\n')) |line| {
-        const row: []u8 = try allocator.alloc(u8, line.len);
-        @memcpy(row, line);
-
-        try rows.append(allocator, row);
+        for (line, 0..) |char, i| {
+            try columns.items[i].append(allocator, char);
+        }
     }
 
-    const row_len = rows.items[0].len;
-    const column_len = rows.items.len - 1;
+    const row_len = columns.items.len;
+    const column_len = columns.items[0].items.len - 1;
     const sign_column_idx = column_len;
 
     var result: u128 = 0;
     var sign: u8 = '+';
-    var value = try ArrayList(u8).initCapacity(allocator, column_len);
     var op_result: u128 = 0;
 
     for (0..row_len) |row_idx| {
-        if (rows.items[sign_column_idx][row_idx] != ' ') {
+        const sign_value = columns.items[row_idx].items[sign_column_idx];
+        if (sign_value != ' ') {
             result += op_result;
-            sign = rows.items[sign_column_idx][row_idx];
+            sign = sign_value;
             op_result = if (sign == '+') 0 else 1;
         }
 
-        for (0..column_len) |column_idx| {
-            if (rows.items[column_idx][row_idx] != ' ') {
-                value.appendAssumeCapacity(rows.items[column_idx][row_idx]);
-            }
-        }
-
-        if (value.items.len > 0) {
-            const parsed_value = try std.fmt.parseInt(u128, value.items, 10);
+        const value = std.mem.trim(u8, columns.items[row_idx].items[0..column_len], " ");
+        if (value.len > 0) {
+            const parsed_value = try std.fmt.parseInt(u128, value, 10);
             if (sign == '+') {
                 op_result += parsed_value;
             } else {
                 op_result *= parsed_value;
             }
         }
-
-        value.clearRetainingCapacity();
     }
     result += op_result;
 
