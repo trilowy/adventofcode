@@ -1,6 +1,5 @@
 const std = @import("std");
 const Reader = std.Io.Reader;
-const ArrayList = std.ArrayList;
 
 const file_name = "input.txt";
 const line_max_length = 1024;
