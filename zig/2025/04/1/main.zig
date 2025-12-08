@@ -49,7 +49,6 @@ fn processResult(reader: *Reader) !u128 {
     var rows = ArrayList([]u8).empty;
 
     while (try reader.takeDelimiter('\n')) |line| {
-        std.debug.print("{s}\n", .{line});
         const row = try allocator.alloc(u8, line.len);
         @memcpy(row, line);
         try rows.append(allocator, row);
@@ -61,12 +60,8 @@ fn processResult(reader: *Reader) !u128 {
         for (0..rows.items[0].len) |col_idx| {
             if (rows.items[row_idx][col_idx] == '@' and has_less_than_4_neighbors(rows.items, row_idx, col_idx)) {
                 result += 1;
-                std.debug.print("X", .{});
-            } else {
-                std.debug.print("{c}", .{rows.items[row_idx][col_idx]});
             }
         }
-        std.debug.print("\n", .{});
     }
 
     return result;
@@ -74,20 +69,15 @@ fn processResult(reader: *Reader) !u128 {
 
 fn has_less_than_4_neighbors(map: [][]u8, row_idx: usize, col_idx: usize) bool {
     const start_row = if (row_idx > 0) row_idx - 1 else row_idx;
-    const end_row = if (row_idx < map.len) row_idx + 1 else row_idx;
+    const end_row = if (row_idx < map.len - 1) row_idx + 1 else row_idx;
     const start_col = if (col_idx > 0) col_idx - 1 else col_idx;
-    const end_col = if (col_idx < map[0].len) col_idx + 1 else col_idx;
+    const end_col = if (col_idx < map[0].len - 1) col_idx + 1 else col_idx;
 
     var neighbors: usize = 0;
-    std.debug.print("start_row,end_row:{d},{d}\n", .{ start_row, end_row });
-    std.debug.print("start_col,end_col:{d},{d}\n", .{ start_col, end_col });
-    for (start_row..end_row) |row| {
-        std.debug.print("row:{d}\n", .{row});
-        for (start_col..end_col) |col| {
-            std.debug.print("row,col:{d},{d}\n", .{ row, col });
+    for (start_row..(end_row + 1)) |row| {
+        for (start_col..(end_col + 1)) |col| {
             if (!(row == row_idx and col == col_idx) and map[row][col] == '@') {
                 neighbors += 1;
-                std.debug.print("neighbors:{d}\n", .{neighbors});
                 if (neighbors >= 4) {
                     return false;
                 }
